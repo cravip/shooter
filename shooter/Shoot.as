@@ -21,15 +21,7 @@
 		
 		
 		public function Shoot() {
-			arr1= new Arrow(false,false);
-			sh1= new Shooter(false);
-			up1 = new Update();
-			tgts= new Target(false);
-			tgtm= new Target(false);
-			tgtl= new Target(false);
-			tgtarr = new Array();
-			chk1= new Chk();
-			tf1= new TextField();
+			
 			
 		    
 			
@@ -51,6 +43,11 @@
 		
 		public function createbutton():void{
 			bp1=new Butplay();
+			if(stage.contains(bp1)==false)
+			   {
+				   
+			   trace("first time");
+			
 			
 			stage.addChildAt(bp1,0);
 			bp1.x=this.getstgwidth()/2 -bp1.width/2;
@@ -60,13 +57,14 @@
 			bp1.addEventListener(MouseEvent.CLICK,buttonclicked);
 			
 			
-			
+			   }
 		}
 		
 		
 		// performs the movement of the arrow and checks for the collision
 		public function perform(e:Event=null):void{
 			//trace("perform");
+			
 			chk1.shooandwall(sh1,this.stage);
 			score=score+chk1.arrandtgt(arr1,tgtarr);
 			chk1.tgtandwall(tgtl,this.stage);
@@ -79,15 +77,17 @@
 		}
 		public function gamecomplete():void{
 			var count:int=6;
-			stage.removeChild(sh1);
-			stage.removeChild(tgts);
-			stage.removeChild(tgtm);
-			stage.removeChild(tgtl);
-			stage.removeChild(bp1);
-			stage.removeChild(arr1);
-			stage.removeChild(tf1);
+			/*sp1.removeChild(sh1);
+			sp1.removeChild(tgts);
+			sp1.removeChild(tgtm);
+			sp1.removeChild(tgtl);
+			//stage.removeChild(bp1);
+			sp1.removeChild(arr1);
+			sp1.removeChild(tf1);*/
+			stage.removeChild(sp1);
 			
-			trace(stage.numChildren);
+			//trace(stage.numChildren);
+			trace(sp1.numChildren);
 			
 			stage.removeEventListener(Event.ENTER_FRAME,perform);
 			stage.removeEventListener(KeyboardEvent.KEY_DOWN,update);
@@ -95,12 +95,15 @@
 			this.score=0;
 			
 			var tf2:TextField= new TextField();
-			tf2.x=stage.stageWidth/2;
+			tf2.autoSize = TextFieldAutoSize.LEFT;
+			
+			tf2.x=bp1.x;
 			tf2.y=stage.stageHeight/2;
 			tf2.defaultTextFormat = new TextFormat('Verdana',15,0x556677);
 			stage.addChild(tf2);
-			tf2.text="GAME OVER";
 			
+			tf2.text="CLICK TO PLAY";
+			bp1.visible=true;
 			
 			
 		}
@@ -109,6 +112,7 @@
 		// moves the shooter up and down 
 		public function update(e:KeyboardEvent):void{
 			//trace("key");
+			
 			if(e.keyCode==(Keyboard.DOWN))
 			up1.shooarrdwn(sh1,arr1);
 			else if(e.keyCode==(Keyboard.UP))
@@ -127,24 +131,44 @@
 			trace("button clicked");
 			this.addcomponents();
 			
-			bp1.visible=false;
-			bp1.removeEventListener(MouseEvent.CLICK,update);
-		}
-		public function addcomponents():void{
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN,update);
+			trace(stage.hasEventListener(KeyboardEvent.KEY_DOWN));
+			
+			bp1.visible=false;
+			
+		}
+		
+		
+		public function addcomponents():void{
+			arr1= new Arrow(false,false);
+			sh1= new Shooter(false);
+			up1 = new Update();
+			tgts= new Target(false);
+			tgtm= new Target(false);
+			tgtl= new Target(false);
+			tgtarr = new Array();
+			chk1= new Chk();
+			sp1= new Sprite();
+			stage.addChild(sp1);
+			sp1.graphics.beginFill(0x112233,1);
+			sp1.graphics.drawRect(0,0,stage.stageWidth,stage.stageHeight);
+			sp1.graphics.endFill();
+			
+			tf1= new TextField();
+			stage.addEventListener(KeyboardEvent.KEY_DOWN,update);
 			stage.addEventListener(Event.ENTER_FRAME,perform);
-			stage.addChildAt(sh1,1);
-			stage.addChildAt(arr1,2);
-			stage.addChildAt(tgtl,3);
-		    stage.addChildAt(tgtm,4);
-			stage.addChildAt(tgts,5);
-			stage.addChildAt(tf1,6);
+			sp1.addChild(sh1);
+			sp1.addChild(arr1);
+			sp1.addChild(tgtl);
+		    sp1.addChild(tgtm);
+			sp1.addChild(tgts);
+			sp1.addChild(tf1);
 			tf1.x=stage.stageWidth/2;
 			tf1.y=0;
 			tf1.autoSize = TextFieldAutoSize.RIGHT;
 		
-             tf1.defaultTextFormat = new TextFormat('Verdana',15,0x556677);
+             tf1.defaultTextFormat = new TextFormat('Verdana',15,0xffffff);
 			
 			
 			tgtm.height=tgts.height*2;
@@ -168,11 +192,14 @@
 			var hratio:Number=this.getstgheight()/this.currstgheight;
 			var wratio:Number=this.getstgwidth()/this.currstgwidth;
 			var i:int;
+			trace("new  " + this.getstgheight())
+			trace("old  "+ this.currstgheight)
 			for(i=0;i<tgtarr.length;i++)
 			{
-				
-				tgtarr[i].x=(tgtarr[i].x*this.getstgwidth())/this.currstgwidth;
-				tgtarr[i].y=(tgtarr[i].y*this.getstgheight())/this.currstgheight;
+				trace("old target" + tgtarr[i].x);
+				tgtarr[i].x=(tgtarr[i].x*tgtarr[i].stage.stageWidth)/this.currstgwidth;
+				trace("new target" + tgtarr[i].x);
+				//tgtarr[i].y=(tgtarr[i].y*this.getstgheight())/this.currstgheight;
 			}
 		}
 		public  function getstgwidth():int{
@@ -211,6 +238,7 @@
 		 var score:int=0;
 		 var lives:int=4;
 		 var tf1:TextField;
+		 var sp1:Sprite;
 	}
 	
 }
